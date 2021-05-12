@@ -1,0 +1,437 @@
+options:
+    prefix: §1[§cAD UHC§1]
+
+on command "reload":
+    kick players due to "{@prefix} §4Reload en cours."
+    set {onlineplayers} to 0
+    disable PvP in all worlds
+    set {pvptimesec} to 0
+    set {pvptimemin} to 0
+    set {bordtimesec} to 0
+    set {bordtimemin} to 0
+    set {epitimesec} to 0
+    set {epitimemin} to 0
+    set {fhtimesec} to 0
+    set {fhtimemin} to 0
+    set {roletimemin} to 0
+    set {roletimesec} to 0
+    set {etatpot} to 1
+    set {etatforce} to 1
+    set {etatspeed} to 1
+    set {etatpoison} to 1
+
+on connect:
+    wait 5 tick
+    make console execute command "/clear %player%"
+    add 1 to {onlineplayers}
+    send "{@prefix} §d%player% §ba rejoint la partie ! Il y a §d%{onlineplayers}% §bjoueur(s) connecté(s)." to players
+    make console execute command "spawnpoint @a 0 250 0"
+    make console execute command "kill %player%"
+    make console execute command "/gamemode 2 %player%"
+    apply saturation to player for 999 days
+    apply resistance 50 to player for 999 days
+    disable PvP in all worlds
+    wait 1 second
+    give command block named "§1Configuration" to player
+
+on quit:
+    remove 1 from {onlineplayers}
+    send "{@prefix} §d%player% §ba quitté la partie ! Il y a §d%{onlineplayers}% §bjoueur(s) connecté(s)." to players
+
+command /say [<text>]:
+    permission: say.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    aliases: bc
+    trigger:
+        if arg-1 is not set:
+            send "§4Il faut rajouter du texte !"
+        else:
+            send "                                                                                                           §e[HOST]: %player% §6%arg-1%                                                                 " to players
+
+on right click holding command block:
+    make player execute command "/config"
+
+
+command /config:
+    permission: config.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        open virtual chest inventory with size 6 named "§1Configuration" to player
+        wait 3 ticks
+        format gui slot 0, 1, 2, 3, 4, 5, 6, 7, 8, 45, 46, 47, 48, 49, 50, 51, 52, 53 of player with gray stained glass pane named "§8-" to do nothing
+        format gui slot 13 of player with block of emerald named "§aLancer la partie !" to close then run console command "/startuhc"
+        format gui slot 28 of player with book named "§9Scénarios" to run player command "/scnedit"
+        format gui slot 34 of player with book and quill named "§5Composition" to run player command "/editcomp"
+        format gui slot 31 of player with barrier named "§4Fermer" to close
+        format gui slot 40 of player with ender chest named "§3Configuration Globale" to run player command "/globconfig"
+
+command /startuhc:
+    permission: start.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        send "Le plugin n'est pas fini petit malin !" to players
+
+command /scnedit:
+    permission: scn.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        open virtual chest inventory with size 6 named "§9Scénarios" to player
+
+command /editcomp:
+    permission: compo.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        send "Le plugin n'est pas fini petit malin !" to player
+
+command /globconfig:
+    permission: gen.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        open virtual chest inventory with size 6 named "§3Configuration Globale" to player
+        format gui slot 48 of player with arrow named "§8Retour" to run player command "/config"
+        format gui slot 13 of player with glass block named "§bBordure" to run player command "/conbord"
+        format gui slot 40 of player with clock named "§5Timers" to run player command "/contime"
+        format gui slot 29 of player with chest named "§6Inventaires" to run player command "/coninv"
+        format gui slot 33 of player with blaze rod named "§4Taux de Drop" to run player command "/contaux"
+        format gui slot 25 of player with water bottle named "§5Potions" to run player command "/conpot"
+        format gui slot 19 of player with grass block named "§2Mondes" to run player command "/conworld"
+        format gui slot 50 of player with barrier named "§4Fermer" to close
+        format gui slot 0, 1, 2, 3, 4, 5, 6, 7, 8, 45, 46, 47, 49, 51, 52, 53 of player with gray stained glass pane named "§8-" to do nothing
+        format gui slot 31 of player with enchantment table named "§5Enchantements" to run player command "/conenchant"
+
+on death of player:
+    force event-player to respawn
+
+on drop command block:
+    cancel event
+
+
+command /conbord:
+    permission: bord.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        open virtual chest inventory with size 3 named "§bBordure" to player
+
+command /contime:
+    permission: time.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        wait 1 tick
+        open virtual chest inventory with size 4 named "§5Timers" to player
+        set {_pvp} to iron chestplate named "§cPvP"
+        set 1st line of lore of {_pvp} to "§l§cTimers :"
+        set 2nd line of lore of {_pvp} to "§4Secondes: %{pvptimesec}%"
+        set 3nd line of lore of {_pvp} to "§4Minutes: %{pvptimemin}%"
+        set 4nd line of lore of {_pvp} to "§4----------------------------"
+        set 5nd line of lore of {_pvp} to "§c Clique-Gauche +"
+        set 6nd line of lore of {_pvp} to "§c Clique-Droit -"
+        format gui slot 11 of player with {_pvp} to run player command "/pvp+" using left mouse button
+        format gui slot 11 of player with {_pvp} to run player command "/pvp-" using right mouse button
+        set {_border} to barrier named "§7Bordure"
+        set 1st line of lore of {_border} to "§8Timers :"
+        set 2nd line of lore of {_border} to "§7Secondes: %{bordtimesec}%"
+        set 3nd line of lore of {_border} to "§7Minutes: %{bordtimemin}%"
+        set 4nd line of lore of {_border} to "§7----------------------------"
+        set 5nd line of lore of {_border} to "§9 Clique-Gauche +"
+        set 6nd line of lore of {_border} to "§9 Clique-Droit -"
+        format gui slot 15 of player with {_border} to run player command "/border+" using left mouse button
+        format gui slot 15 of player with {_border} to run player command "/border-" using right mouse button
+        format gui slot 30 of player with arrow named "§8Retour" to run player command "/globconfig"
+        format gui slot 32 of player with barrier named "§4Fermer" to close
+        format gui slot 27, 28, 29, 31, 33, 34, 35, 0, 1, 2, 3, 4, 5, 6, 7, 8 of player with gray stained glass pane named "§8-" to do nothing
+        set {_episode} to nether star named "§2Episode"
+        set 1st line of lore of {_episode} to "§aTimers :"
+        set 2nd line of lore of {_episode} to "§2Secondes: %{epitimesec}%"
+        set 3nd line of lore of {_episode} to "§2Minutes: %{epitimemin}%"
+        set 4nd line of lore of {_episode} to "§b----------------------------"
+        set 5nd line of lore of {_episode} to "§3 Clique-Gauche +"
+        set 6nd line of lore of {_episode} to "§3 Clique-Droit -"
+        format gui slot 13 of player with {_episode} to run player command "/epi+" using left mouse button
+        format gui slot 13 of player with {_episode} to run player command "/epi-" using right mouse button
+        set {_fh} to golden apple named "§dFinal Heal"
+        set 1st line of lore of {_fh} to "§5Timers :"
+        set 2nd line of lore of {_fh} to "§cSecondes: %{fhtimesec}%"
+        set 3nd line of lore of {_fh} to "§cMinutes: %{fhtimemin}%"
+        set 4nd line of lore of {_fh} to "§5----------------------------"
+        set 5nd line of lore of {_fh} to "§c Clique-Gauche +"
+        set 6nd line of lore of {_fh} to "§c Clique-Droit -"
+        format gui slot 12 of player with {_fh} to run player command "/fh+" using left mouse button
+        format gui slot 12 of player with {_fh} to run player command "/fh-" using right mouse button
+        set {_role} to empty map named "§1Rôles"
+        set 1st line of lore of {_role} to "§3Timers :"
+        set 2nd line of lore of {_role} to "§9Secondes: %{roletimesec}%"
+        set 3nd line of lore of {_role} to "§9Minutes: %{roletimemin}%"
+        set 4nd line of lore of {_role} to "§3----------------------------"
+        set 5nd line of lore of {_role} to "§b Clique-Gauche +"
+        set 6nd line of lore of {_role} to "§b Clique-Droit -"
+        format gui slot 14 of player with {_role} to run player command "/role+" using left mouse button
+        format gui slot 14 of player with {_role} to run player command "/role-" using right mouse button
+
+
+command /coninv:
+    permission: inv.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        open virtual chest inventory with size 6 named "§6Inventaires" to player
+
+command /contaux:
+    permission: taux.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        open virtual chest inventory with size 3 named "§4Taux de Drop" to player
+
+command /conworld:
+    permission: world.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        open virtual chest inventory with size 3 named "§2Mondes" to player
+
+command /pvp+:
+    permission: pvp+.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        add 30 to {pvptimesec}
+        wait 1 tick
+        make player execute command "/contime"
+
+command /pvp-:
+    permission: pvp-.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        remove 30 from {pvptimesec}
+        wait 1 tick
+        make player execute command "/contime"
+
+every tick:
+    if {pvptimesec} is greater than 59:
+        remove 60 from {pvptimesec}
+        add 1 to {pvptimemin}
+    else if {pvptimesec} is smaller than 0:
+        remove 1 from {pvptimemin}
+        set {pvptimesec} to 30
+
+command /border+:
+    permission: border+.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        add 30 to {bordtimesec}
+        wait 1 tick
+        make player execute command "/contime"
+
+command /border-:
+    permission: border-.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        remove 30 from {bordtimesec}
+        wait 1 tick
+        make player execute command "/contime"
+
+every tick:
+    if {bordtimesec} is greater than 59:
+        remove 60 from {bordtimesec}
+        add 1 to {bordtimemin}
+    else if {bordtimesec} is smaller than 0:
+        remove 1 from {bordtimemin}
+        set {bordtimesec} to 30
+
+command /epi+:
+    permission: epi+.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        add 30 to {epitimesec}
+        wait 1 tick
+        make player execute command "/contime"
+
+command /epi-:
+    permission: epi-.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        remove 30 from {epitimesec}
+        wait 1 tick
+        make player execute command "/contime"
+
+every tick:
+    if {epitimesec} is greater than 59:
+        remove 60 from {epitimesec}
+        add 1 to {epitimemin}
+    else if {epitimesec} is smaller than 0:
+        remove 1 from {epitimemin}
+        set {epitimesec} to 30
+
+command /fh+:
+    permission: fh+.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        add 30 to {fhtimesec}
+        wait 1 tick
+        make player execute command "/contime"
+
+command /fh-:
+    permission: fh-.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        remove 30 from {fhtimesec}
+        wait 1 tick
+        make player execute command "/contime"
+
+every tick:
+    if {fhtimesec} is greater than 59:
+        remove 60 from {fhtimesec}
+        add 1 to {fhtimemin}
+    else if {fhtimesec} is smaller than 0:
+        remove 1 from {fhtimemin}
+        set {fhtimesec} to 30
+
+command /role+:
+    permission: role+.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        add 30 to {roletimesec}
+        wait 1 tick
+        make player execute command "/contime"
+
+command /role-:
+    permission: role-.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        remove 30 from {roletimesec}
+        wait 1 tick
+        make player execute command "/contime"
+
+every tick:
+    if {roletimesec} is greater than 59:
+        remove 60 from {roletimesec}
+        add 1 to {roletimemin}
+    else if {roletimesec} is smaller than 0:
+        remove 1 from {roletimemin}
+        set {roletimesec} to 30
+
+command /conpot:
+    permission: pot.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        open virtual chest inventory with size 5 named "§5Potions" to player
+        set {_pot} to nether star named "§cPotions"
+        set 1st line of lore of {_pot} to "§dEtat :"
+        set 2nd line of lore of {_pot} to "§5%{etatpot}% :"
+        set 3nd line of lore of {_pot} to "§5----------------------------"
+        set 4nd line of lore of {_pot} to "§21 = Activé §40 = Désactivé"
+        format gui slot 10 of player with {_pot} to run player command "/pot+" using left mouse button
+        format gui slot 10 of player with {_pot} to run player command "/pot-" using right mouse button
+        set {_force} to blaze rod named "§4Potion de Force"
+        set 1st line of lore of {_force} to "§dEtat :"
+        set 2nd line of lore of {_force} to "§5%{etatforce}% :"
+        set 3nd line of lore of {_force} to "§5----------------------------"
+        set 4nd line of lore of {_force} to "§21 = Activé §40 = Désactivé"
+        format gui slot 12 of player with {_force} to run player command "/force+" using left mouse button
+        format gui slot 12 of player with {_force} to run player command "/force-" using right mouse button
+        set {_speed} to sugar named "§3Potion de Vitesse"
+        set 1st line of lore of {_speed} to "§dEtat :"
+        set 2nd line of lore of {_speed} to "§5%{etatspeed}% :"
+        set 3nd line of lore of {_speed} to "§5----------------------------"
+        set 4nd line of lore of {_speed} to "§21 = Activé §40 = Désactivé"
+        format gui slot 14 of player with {_speed} to run player command "/speed+" using left mouse button
+        format gui slot 14 of player with {_speed} to run player command "/speed-" using right mouse button
+        set {_poison} to spider eye named "§2Potion de Poison"
+        set 1st line of lore of {_poison} to "§dEtat :"
+        set 2nd line of lore of {_poison} to "§5%{etatpoison}% :"
+        set 3nd line of lore of {_poison} to "§5----------------------------"
+        set 4nd line of lore of {_poison} to "§21 = Activé §40 = Désactivé"
+        format gui slot 16 of player with {_poison} to run player command "/poison+" using left mouse button
+        format gui slot 16 of player with {_poison} to run player command "/poison-" using right mouse button
+
+
+
+
+command /pot+:
+    permission: pot+.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        set {etatpot} to 1
+        wait 1 tick
+        make player execute command "/conpot"
+
+command /pot-:
+    permission: pot-.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        set {etatpot} to 0
+        wait 1 tick
+        make player execute command "/conpot"
+
+command /conenchant:
+    permission: enchant.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        open virtual chest inventory with size 5 named "§5Enchantements" to player
+
+on drink potion:
+    if {etatpot} is 0:
+        cancel event
+        send "{@prefix} §4Les potions sont désactivés." to player
+
+command /force+:
+    permission: force+.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        set {etatforce} to 1
+        wait 1 tick
+        make player execute command "/conpot"
+
+command /force-:
+    permission: force-.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        set {etatforce} to 0
+        wait 1 tick
+        make player execute command "/conpot"
+
+command /speed+:
+    permission: speed+.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        set {etatspeed} to 1
+        wait 1 tick
+        make player execute command "/conpot"
+
+command /speed-:
+    permission: speed-.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        set {etatspeed} to 0
+        wait 1 tick
+        make player execute command "/conpot"
+
+on drink potion:
+    if {etatspeed} is 0:
+        if player has 1 potion with nbt "2":
+            cancel event
+            send "{@prefix} §4Les potions de Vitesse sont désactivées." to player
+
+on drink potion:
+    if {etatforce} is 0:
+        if player has 1 potion with nbt "9":
+            cancel event
+            send "{@prefix} §4Les potions de Force sont désactivées." to player
+
+command /poison+:
+    permission: poison+.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        set {etatpoison} to 1
+        wait 1 tick
+        make player execute command "/conpot"
+
+command /poison-:
+    permission: poison-.use
+    permission message: §4Tu n'es pas l'host de la partie...
+    trigger:
+        set {etatpoison} to 0
+        wait 1 tick
+        make player execute command "/conpot"
+
+on drink potion:
+    if {etatpoison} is 0:
+        if player has 1 potion with nbt "4":
+            cancel event
+            send "{@prefix} §4Les potions de Poison sont désactivées." to player
