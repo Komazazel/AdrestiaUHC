@@ -442,4 +442,28 @@ command /msg <player> <text>: #Commande de message
 	send "[%player% --> moi] %arg-2%" to %arg-1%
 	send "[moi --> %player%] %arg-2%" to player
 	
-on craft of 
+on craft of pickaxe: #scenarios hastey boys
+	enchant item-event with efficiency 3
+	enchant item-event with unbreaking 3
+on craft of axe:
+	enchant item-event with efficiency 3
+	enchant item-event with unbreaking 3
+on craft of shovel:
+	enchant item-event with efficiency 3
+	enchant item-event with unbreaking 3
+on craft of hoe:
+	enchant item-event with unbreaking 3
+
+on portal create: #nether off
+	cancel
+
+on mine of iron ore: #debut cut clean
+	cancel drops
+	wait 1 tick
+	drop iron ingot at event-location
+	drop experience <pointsd'xp>
+on mine of golden ore:
+	cancel drops
+	wait 1 tick
+	drop golden ingot at event-location
+	drop experience <pointsd'xp> 
