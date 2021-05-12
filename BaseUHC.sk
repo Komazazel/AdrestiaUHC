@@ -467,3 +467,10 @@ on mine of golden ore:
 	wait 1 tick
 	drop golden ingot at event-location
 	drop experience <pointsd'xp> 
+
+on damage: #essai fireless
+	if damage cause by fire:
+		cancel event
+on damage:
+	if damage cause by lava:
+		cancel event 
