@@ -435,3 +435,11 @@ on drink potion:
         if player has 1 potion with nbt "4":
             cancel event
             send "{@prefix} §4Les potions de Poison sont désactivées." to player
+
+command /msg <player> <text>: #Commande de message
+	usage: &c/msg <player> <text>
+	trigger:
+	send "[%player% --> moi] %arg-2%" to %arg-1%
+	send "[moi --> %player%] %arg-2%" to player
+	
+on craft of 
