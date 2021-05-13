@@ -439,7 +439,7 @@ on drink potion:
 command /msg <player> <text>: #Commande de message
 	usage: &c/msg <player> <text>
 	trigger:
-	send "[%player% --> moi] %arg-2%" to %arg-1%
+	send "[%player% --> moi] %arg-2%" to arg-1
 	send "[moi --> %player%] %arg-2%" to player
 	
 on craft of pickaxe: #scenarios hastey boys
@@ -455,7 +455,7 @@ on craft of hoe:
 	enchant item-event with unbreaking 3
 
 on portal create: #nether off
-	cancel
+	cancel event
 
 on mine of iron ore: #debut cut clean
 	cancel drops
